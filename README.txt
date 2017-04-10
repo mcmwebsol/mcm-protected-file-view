@@ -3,13 +3,15 @@ Contributors: mcmwebsol
 Tags: plugin, file
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
  
 Protects uploaded files so they can only be viewed by logged-in users
  
 == Description ==
+
+Protects uploaded files so they can only be viewed by logged-in users
  
 This plugin does not work with the media library.   It only protects files uploaded through the plugin itself.
  
@@ -25,6 +27,10 @@ Requires a web server that supports .htaccess files for access control, such as 
  
  
 == Changelog ==
+ 
+= 1.1 =
+* Fix for MS Word documents not uploading
+ 
  
 = 1.0 =
 * Initial version
