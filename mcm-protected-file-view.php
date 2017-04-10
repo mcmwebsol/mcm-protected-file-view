@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: MCM Protected File View
-Plugin URI: 
+Plugin URI: http://www.mcmwebsite.com/mcm-protected-file-view.html
 Description: Protect uploaded files so they can only be viewed by logged-in users 
-Version: 1.0
+Version: 1.1
 Author: MCM Web Solutions, LLC
 Author URI: http://www.mcmwebsite.com
 License: GPL v. 2
@@ -15,7 +15,7 @@ License: GPL v. 2
 
 // TODO - test multi-site compatability
 
-// TODO - test on multiple PHP versions, e.g. 5.2, 5.3, 5.4, 5.5, 7.0, 7.1  (main test env is 5.6.29)
+// TODO - test on multiple PHP versions, e.g. 5.2, 5.3, 5.4, 5.5, 7.0, 7.1  (main test env is 5.6.29)  tested with php7cc (PHP7 only) and WP Engine's WP plugin tester (on 5.3-7.0)
 
 
 add_action( 'init', 'mcm_protected_file_view_init' );
@@ -221,7 +221,15 @@ class MCM_Protected_File_View {
   
   
   // TODO - CHECK $mimeTypesAllowed list
-  function uploadFile() {           
+  function uploadFile() {          
+  
+     ?>
+     <style type="text/css">
+     .mcm-error {
+       color: red;
+     }
+     </style>
+     <?php 
 
      $debug = 0;
      //error_reporting(E_ALL); // DEBUG CODE (TODO - REMOVE)
@@ -242,7 +250,8 @@ class MCM_Protected_File_View {
                                'application/vnd.pdf',
                                'application/msword',
                                'application/vnd.ms-powerpoint',
-                               'application/vnd.ms-excel'); 
+                               'application/vnd.ms-excel',
+                               'application/vnd.openxmlformats-officedocument.wordprocessingml.document'); 
                              
 
 
@@ -254,6 +263,14 @@ class MCM_Protected_File_View {
      $image_to_edit = $userfile;
       
      $uploadfile = $IMAGE_DIR . "/" . $image_to_edit;
+     
+     if ( strpos($image_to_edit, '..') !== FALSE ) {
+	     die(); // avoid directory traversal attacks	    
+     }
+     
+     if ( strpos($image_to_edit, '/') !== FALSE ) {
+	     die(); // avoid directory traversal attacks	    
+     }
       
       if ($debug)
          print "uploadfile=$uploadfile";
@@ -269,6 +286,11 @@ class MCM_Protected_File_View {
       
       $imtype = $_FILES[$fieldName]['type'];
       
+      if ($imtype == 'application/octet-stream') { 
+        $fileInfo = wp_check_filetype($uploadfile);
+        $imtype = $fileInfo['type'];
+      }
+      
       $fileMimeTypeOk = 0;
       foreach ($mimeTypesAllowed as $mimeType) {
          if ( strcasecmp($imtype, $mimeType) == 0 ) {
@@ -278,7 +300,7 @@ class MCM_Protected_File_View {
       }
       if (!$fileMimeTypeOk) {
          //echo $closeS;
-         exit("Please upload files with the extensions ".implode(',', $fileExtsAllowed)." only (not $imtype)");
+         exit("<div class=\"mcm-error\">Please upload files with the extensions ".implode(',', $fileExtsAllowed)." only (not $imtype)</div>");
       }
       
       $fileExtOk = 0;
@@ -290,13 +312,13 @@ class MCM_Protected_File_View {
       }
       if (!$fileExtOk) {
          //echo $closeS;
-         exit("Please upload images with the extensions ".implode(',', $fileExtsAllowed)." only (not $imname)");
+         exit("<div class=\"mcm-error\">Please upload images with the extensions ".implode(',', $fileExtsAllowed)." only (not $imname)");
       }
       
-      // rejects all .exe, .com, .bat, .zip, and .doc files, etc.
-      if( preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.asp$|.html$|.htm$|.shtml$|.js$|.shtm$/i", $imname) ) {
+      // rejects all .exe, .com, .bat, and .html files, etc.
+      if( preg_match("/.exe$|.com$|.bat$|.php$|.asp$|.html$|.htm$|.shtml$|.js$|.shtm$/i", $imname) ) {
         //echo $closeS;
-        exit("You cannot upload this type of file.");
+        exit("<div class=\"mcm-error\">You cannot upload this type of file.</div>");
       }
       
       
