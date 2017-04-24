@@ -3,7 +3,7 @@ Contributors: mcmwebsol
 Tags: plugin, file
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
  
@@ -27,6 +27,10 @@ Requires a web server that supports .htaccess files for access control, such as 
  
  
 == Changelog ==
+ 
+= 1.2 =
+* Fix for Multi-site compatibility 
+ 
  
 = 1.1 =
 * Fix for MS Word documents not uploading
