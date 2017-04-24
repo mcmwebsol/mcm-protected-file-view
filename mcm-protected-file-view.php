@@ -3,7 +3,7 @@
 Plugin Name: MCM Protected File View
 Plugin URI: http://www.mcmwebsite.com/mcm-protected-file-view.html
 Description: Protect uploaded files so they can only be viewed by logged-in users 
-Version: 1.1
+Version: 1.2
 Author: MCM Web Solutions, LLC
 Author URI: http://www.mcmwebsite.com
 License: GPL v. 2
@@ -13,9 +13,9 @@ License: GPL v. 2
        
 
 
-// TODO - test multi-site compatability
 
-// TODO - test on multiple PHP versions, e.g. 5.2, 5.3, 5.4, 5.5, 7.0, 7.1  (main test env is 5.6.29)  tested with php7cc (PHP7 only) and WP Engine's WP plugin tester (on 5.3-7.0)
+
+// TODO - test on multiple PHP versions, e.g. 5.2, 5.3, 5.4, 5.5, 7.1  (main test env is 5.6.29, also tested on 7.0)  tested with php7cc (PHP7 only) and WP Engine's WP plugin tester (on 5.3-7.0)
 
 
 add_action( 'init', 'mcm_protected_file_view_init' );
@@ -380,7 +380,17 @@ class MCM_Protected_File_View {
       
   function checkLoggedin() {
   
-    if ( !is_user_logged_in() ) {
+    global $current_user;
+    get_currentuserinfo();
+  
+    $loggedIn = false;
+    $userID = $current_user->ID; 
+    if ( is_user_logged_in() ) {
+      if ( is_user_member_of_blog($user_id) ) {   
+        $loggedIn = true;
+      }
+    }
+    if (!$loggedIn) {   
       // if not logged in, redirect to login page (or just die()???)
       die();
     }
