@@ -3,7 +3,7 @@
 Plugin Name: MCM Protected File View
 Plugin URI: http://www.mcmwebsite.com/mcm-protected-file-view.html
 Description: Protect uploaded files so they can only be viewed by logged-in users 
-Version: 1.2
+Version: 1.3
 Author: MCM Web Solutions, LLC
 Author URI: http://www.mcmwebsite.com
 License: GPL v. 2
@@ -11,8 +11,6 @@ License: GPL v. 2
        
 // TODO - add analytics/tracking/etc.       
        
-
-
 
 
 // TODO - test on multiple PHP versions, e.g. 5.2, 5.3, 5.4, 5.5, 7.1  (main test env is 5.6.29, also tested on 7.0)  tested with php7cc (PHP7 only) and WP Engine's WP plugin tester (on 5.3-7.0)
@@ -36,6 +34,7 @@ class MCM_Protected_File_View {
   private static $pluginName = 'MCM Protected File View';
   private static $pluginCode = 'mcm_protected_file_view';
   private static $uploadDirectory = 'mcm_protected_uploads';
+  private static $nonceCode = 'mcm-upload-new-protected-file';
        
   function __construct() {                  
     add_action( 'plugins_loaded', array($this, 'myLoaded') );         
@@ -215,13 +214,19 @@ class MCM_Protected_File_View {
     <input type="hidden" name="op" value="upload" />
     
     <input type="submit" name="submit" value="Upload File" />
+    
+    <?php
+    wp_nonce_field( self::$nonceCode );
+    ?>
   </form>
   <?php
   } // end showUploadForm()
   
   
-  // TODO - CHECK $mimeTypesAllowed list
+ 
   function uploadFile() {          
+  
+     check_admin_referer( self::$nonceCode );
   
      ?>
      <style type="text/css">
@@ -402,6 +407,7 @@ class MCM_Protected_File_View {
         
     $this->checkLoggedin();
     
+    $filename = strip_tags($filename);   
     
     if ($filename == '') {
       die();
@@ -411,10 +417,13 @@ class MCM_Protected_File_View {
 	    die(); // avoid directory traversal attacks	    
     }
         
+        
+     
+        
     
     $docRoot = $this->getAbsoluteUploadPath();
           
-	  $filename = $docRoot.'/'.$filename;
+	  $filename = $docRoot.'/'.$filename;  
 	  	 
     $fileExt = $this->getFileExt($filename);
         
