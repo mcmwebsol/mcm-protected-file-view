@@ -3,7 +3,7 @@ Contributors: mcmwebsol
 Tags: plugin, file
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 1.2
+Stable tag: 1.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Requires a web server that supports .htaccess files for access control, such as 
 
 
 == Changelog ==
+
+= 1.4 =
+* Fix for deprecated code in add_options_page() call
 
 = 1.3 =
 * Fix for possible XSS and CSRF issues 

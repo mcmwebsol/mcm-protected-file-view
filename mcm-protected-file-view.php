@@ -3,7 +3,7 @@
 Plugin Name: MCM Protected File View
 Plugin URI: http://www.mcmwebsite.com/mcm-protected-file-view.html
 Description: Protect uploaded files so they can only be viewed by logged-in users 
-Version: 1.3
+Version: 1.4
 Author: MCM Web Solutions, LLC
 Author URI: http://www.mcmwebsite.com
 License: GPL v. 2
@@ -47,7 +47,8 @@ class MCM_Protected_File_View {
   
   
   function admin_actions() {
-    add_options_page( "", self::$pluginName, 1, self::$pluginCode, array($this, "menu") );
+    $capability = 'manage_options';
+    add_options_page( "", self::$pluginName, $capability, self::$pluginCode, array($this, "menu") );
   } // end admin_actions()
   
   
