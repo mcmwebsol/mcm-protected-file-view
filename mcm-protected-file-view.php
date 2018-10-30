@@ -3,17 +3,13 @@
 Plugin Name: MCM Protected File View
 Plugin URI: http://www.mcmwebsite.com/mcm-protected-file-view.html
 Description: Protect uploaded files so they can only be viewed by logged-in users 
-Version: 1.6
+Version: 1.7
 Author: MCM Web Solutions, LLC
 Author URI: http://www.mcmwebsite.com
 License: GPL v. 2
 */
        
-// TODO - add analytics/tracking/etc.       
        
-
-
-// TODO - test on multiple PHP versions, e.g. 5.2, 5.3, 5.4, 5.5, 7.1  (main test env is 5.6.29, also tested on 7.0)  tested with php7cc (PHP7 only) and WP Engine's WP plugin tester (on 5.3-7.0)
 
 
 add_action( 'init', 'mcm_protected_file_view_init' );
@@ -67,7 +63,11 @@ class MCM_Protected_File_View {
             Your files
              will <em>not</em> be protected otherwise!
             <br />
-            You can test that your files are protected by using the wp-content/uploads/ path. <!-- TODO give better example or even a live link here  -->
+            <em>Please note that even Apache on Linux disables .htaccess files in newer versions in some configurations, so please check to make sure your files aren't publicly accessible.</em>
+            <br />
+            You can test that your files are protected by using the wp-content/uploads/<?php echo self::$uploadDirectory; ?> path or
+            by using the "Test link security" link on the "List all protected uploads" page.  You should receive a 403 Forbidden error
+            if it's working correctly.
     </strong>
     <br />
     <?php
@@ -118,6 +118,19 @@ class MCM_Protected_File_View {
            '/?mcm_protected_file_view=1'.
            '&amp;'.
            'f='.
+           $filename;
+   
+    return $url;        
+  
+  } // end getFileLink()
+  
+  
+  function getFileURL($filename) {
+  
+    $uploadPath = wp_get_upload_dir();
+  
+    $url = $uploadPath['baseurl'].'/'.
+           self::$uploadDirectory.'/'.
            $filename;
    
     return $url;        
@@ -187,7 +200,7 @@ class MCM_Protected_File_View {
   <?php  
       foreach ($files as $f) {
   ?>
-        <li><a href="<?php echo $this->getFileLink($f); ?>"><?php echo $f; ?></a></li>
+        <li><a href="<?php echo $this->getFileLink($f); ?>"><?php echo $f; ?></a> &nbsp; (<a href="<?php echo $this->getFileURL($f); ?>" target="_blank">Test link security</a>)</li>
   <?php  
       }
   ?>
