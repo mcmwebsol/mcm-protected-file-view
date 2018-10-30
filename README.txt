@@ -2,8 +2,9 @@
 Contributors: mcmwebsol
 Tags: plugin, file
 Requires at least: 4.6
-Tested up to: 4.9
-Stable tag: 1.6
+Tested up to: 5.0
+Requires PHP: 5.6
+Stable tag: 1.7
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,8 +16,13 @@ Protects uploaded files so they can only be viewed by logged-in users
 
 This plugin does not work with the media library.   It only protects files uploaded through the plugin itself.
 
-Requires a web server that supports .htaccess files for access control, such as Apache on Linux.
+Requires a web server that supports .htaccess files for access control, such as Apache on Linux.  Please note that even Apache on Linux
+disables .htaccess files in newer versions in some configurations, so please check to make sure your files aren't publicly accessible.
+You can test that your files are protected by using the wp-content/uploads/ path or
+            by using the "Test link security" link on the "List all protected uploads" page.  You should receive a 403 Forbidden error
+            if it's working correctly.
 
+This plugin does not collect any private data itself though it's possible logged-in users may upload private data to your website using this plugin.
 
 
 == Installation ==
@@ -27,6 +33,9 @@ Requires a web server that supports .htaccess files for access control, such as 
 
 
 == Changelog ==
+
+= 1.7 =
+* Add link security checker
 
 = 1.4 =
 * Fix for deprecated code in add_options_page() call
