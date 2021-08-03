@@ -3,13 +3,14 @@
 Plugin Name: MCM Protected File View
 Plugin URI: http://www.mcmwebsite.com/mcm-protected-file-view.html
 Description: Protect uploaded files so they can only be viewed by logged-in users 
-Version: 1.7
+Version: 1.9
 Author: MCM Web Solutions, LLC
 Author URI: http://www.mcmwebsite.com
 License: GPL v. 2
 */
        
        
+// add way to check if .htaccess working - TODO!!!!!!!!!! - e.g. auto try wp-content/uploads/ path to file - see if data returned??
 
 
 add_action( 'init', 'mcm_protected_file_view_init' );
@@ -303,6 +304,16 @@ class MCM_Protected_File_View {
       $ct = count($sArr) - 1;
       $ext = $sArr[$ct];
       
+      if ( strlen($imname) > 255 )
+        die('Filename is too long.  Please limit to 255 characters maximum.');
+      
+      if ($imname == '.htaccess')
+        die('Invalid file type');
+      
+      // prevent "double extension" attack (e.g. uploading a file with multiple extensions ie. info.php.png)
+      if ( strpos($imname, '.php') !== FALSE )
+        die('You cannot upload files with ".php" in the filename.');
+      
       $imtype = $_FILES[$fieldName]['type'];
       
       if ($imtype == 'application/octet-stream') { 
@@ -403,9 +414,9 @@ class MCM_Protected_File_View {
     get_currentuserinfo();
   
     $loggedIn = false;
-    $userID = $current_user->ID; 
+    $userID = $current_user->ID; // need to branch on this if NULL or undefined for PHP 8 - TODO
     if ( is_user_logged_in() ) {
-      if ( is_user_member_of_blog($user_id) ) {   
+      if ( is_user_member_of_blog($user_id) ) {   // PHP 8.0 - Warning: Undefined variable $user_id
         $loggedIn = true;
       }
     }
@@ -528,6 +539,7 @@ class MCM_Protected_File_View {
    header("Expires: 0");
    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
    header("Cache-Control: private",false);
+   header('X-Content-Type-Options: nosniff');
    header("Content-Type: $contentType");   
    //header("Content-Disposition: attachment; filename=\"".$orgFilename."\";" );
    header('Content-Transfer-Encoding: binary');
